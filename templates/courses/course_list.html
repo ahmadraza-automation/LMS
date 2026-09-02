@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Available Courses</h2>
+    {% if user.is_authenticated %}
+        <a href="{% url 'courses:create_course' %}" class="btn btn-outline-primary btn-sm">
+            <i class="bi bi-plus-circle me-1"></i> Add New Course
+        </a>
+    {% endif %}
+</div>
+
+<div class="row">
+    {% for course in courses %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title fw-bold text-dark">{{ course.title }}</h5>
+                <p class="card-text text-secondary flex-grow-1">
+                    {{ course.description|truncatewords:15 }}
+                </p>
+                <div class="d-flex justify-content-between align-items-center mt-3 pt-3 border-top">
+                    <span class="fs-5 fw-bold text-success">
+                        {% if course.price == 0 %}
+                            Free
+                        {% else %}
+                            ${{ course.price }}
+                        {% endif %}
+                    </span>
+                    <a href="{% url 'courses:course_detail' course.pk %}" class="btn btn-primary px-3">
+                        View Details
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info text-center py-4" role="alert">
+            <i class="bi bi-info-circle fs-4 d-block mb-2"></i>
+            No courses available yet. Click <strong>Create Course</strong> to add the first one!
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="card shadow-sm p-4 mb-4 border-0">
+    <div class="d-flex justify-content-between align-items-start">
+        <div>
+            <h2 class="fw-bold mb-2">{{ course.title }}</h2>
+            <p class="text-muted mb-3">
+                <i class="bi bi-person-badge me-1"></i> Instructor: <strong>{{ course.instructor.username }}</strong>
+            </p>
+        </div>
+        <span class="badge bg-primary fs-6 px-3 py-2">
+            {% if course.price == 0 %}Free{% else %}${{ course.price }}{% endif %}
+        </span>
+    </div>
+
+    <p class="lead fs-6">{{ course.description }}</p>
+
+    <div class="mt-3">
+        {% if user.is_authenticated %}
+            {% if is_enrolled or course.instructor == user %}
+                <div class="alert alert-success d-inline-flex align-items-center mb-0 py-2 px-3">
+                    <i class="bi bi-check-circle-fill me-2"></i> 
+                    {% if course.instructor == user %}You are the Instructor of this Course{% else %}You are Enrolled in this Course{% endif %}
+                </div>
+            {% else %}
+                <a href="{% url 'courses:enroll_course' course.pk %}" class="btn btn-success px-4 fw-bold">
+                    <i class="bi bi-mortarboard me-1"></i> Enroll Now (${{ course.price }})
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'admin:login' %}?next={{ request.path }}" class="btn btn-warning px-4 fw-bold">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Login to Enroll
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<h3 class="fw-bold mb-3">Course Curriculum</h3>
+<div class="list-group shadow-sm">
+    {% for lesson in lessons %}
+        <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center p-3">
+            <div class="me-3">
+                <h6 class="mb-1 fw-bold">
+                    <span class="text-primary me-2">Lesson {{ lesson.order }}:</span>{{ lesson.title }}
+                </h6>
+                {% if is_enrolled or course.instructor == user %}
+                    {% if lesson.content %}
+                        <p class="mb-2 text-secondary small">{{ lesson.content }}</p>
+                    {% endif %}
+                    {% if lesson.video_url %}
+                        <a href="{{ lesson.video_url }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill">
+                            <i class="bi bi-play-circle-fill me-1"></i> Watch Video
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+            <div>
+                {% if not is_enrolled and course.instructor != user %}
+                    <span class="badge bg-secondary rounded-pill px-3 py-2">
+                        <i class="bi bi-lock-fill me-1"></i> Locked
+                    </span>
+                {% else %}
+                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-2">
+                        <i class="bi bi-unlock-fill me-1"></i> Unlocked
+                    </span>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <div class="list-group-item text-muted py-3 text-center">
+            No lessons uploaded for this course yet.
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

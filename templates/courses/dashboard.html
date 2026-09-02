@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="my-3">
+    <div class="p-4 mb-4 bg-dark text-white rounded-3 shadow-sm">
+        <h2 class="fw-bold">Welcome back, {{ user.username }}! 👋</h2>
+        <p class="lead mb-0 text-light">Manage your enrolled courses and track your progress here.</p>
+    </div>
+
+    <h3 class="fw-bold mb-4">My Enrolled Courses</h3>
+    <div class="row">
+        {% for course in courses %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100 shadow-sm border-0 d-flex flex-column">
+                    <div class="card-body flex-grow-1">
+                        <span class="badge bg-success mb-2">
+                            <i class="bi bi-check-circle me-1"></i> Enrolled
+                        </span>
+                        <h5 class="card-title fw-bold text-dark mt-1">{{ course.title }}</h5>
+                        <p class="card-text text-secondary small">
+                            {{ course.description|truncatewords:14 }}
+                        </p>
+                    </div>
+                    <div class="card-footer bg-transparent border-0 pb-3 pt-0">
+                        <a href="{% url 'courses:course_detail' course.pk %}" class="btn btn-primary w-100 fw-bold">
+                            Continue Learning 🚀
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% empty %}
+            <div class="col-12">
+                <div class="alert alert-info py-4 text-center border-0 shadow-sm">
+                    <i class="bi bi-mortarboard fs-3 d-block mb-2"></i>
+                    You haven't enrolled in any courses yet. 
+                    <a href="{% url 'courses:course_list' %}" class="alert-link fw-bold ms-1">Browse courses now!</a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
